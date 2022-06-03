@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <title>Регистрация</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
+    </script>
+</head>
+<body onload="shuffleOptions()">
+
+<header th:insert="frag/header :: header"></header>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col d-flex justify-content-center"><span id="msg"></span></div>
+        <div class="col d-flex justify-content-right"><span id="timer"></span></div>
+    </div>
+
+    <label for="login" class="form-label">Логин</label>
+    <input type="text" id="login" name="login" placeholder="Логин" class="form-control"><br>
+
+    <label for="email-div" class="form-label">Email</label>
+    <div id="email-div" class="row gx-3">
+        <div class="form-group col-md-6">
+            <input type="text" id="email" name="email" placeholder="Email" class="form-control">
+        </div>
+        <div class="form-group col-md-3">
+            <select id="email-select" class="form-control" aria-label="Default select example"></select>
+        </div>
+        <div class="form-group col-md-3">
+            <select id="email-select-domain" class="form-control" aria-label="Default select example"></select>
+        </div>
+    </div><br>
+
+    <label for="password" class="form-label">Пароль</label>
+    <input type="password" id="password" name="password" placeholder="Пароль" class="form-control"><br>
+    <input type="text" id="rPassword" name="password" placeholder="Повторите пароль" class="form-control"><br>
+
+    <label for="firstName" class="form-label">ФИО</label>
+    <input type="text"  id="firstName" name="firstName" placeholder="Имя" class="form-control"><br>
+    <input type="text"  id="secondName" name="secondName" placeholder="Фамилия" class="form-control"><br>
+    <input type="text"  id="patronymic" name="patronymic" placeholder="Отчество" class="form-control"><br>
+
+    <label for="dob" class="form-label">Дата рождения</label>
+    <div class="row gx-3">
+        <div class="form-group col-md-6 d-flex justify-content-center">
+            <input type="text"  id="dob" name="dob" value="00.00.0000" placeholder="00.00.0000" class="form-control" disabled>
+        </div>
+        <div class="form-group col-md-2">
+            <button class="btn btn-dark btn-block" onclick="randDay()">Выбрать день</button>
+        </div>
+        <div class="form-group col-md-2">
+            <button class="btn btn-dark btn-block" onclick="randMonth()">Выбрать месяц</button>
+        </div>
+        <div class="form-group col-md-2">
+            <button class="btn btn-dark btn-block" onclick="randYear()">Выбрать год</button>
+        </div>
+    </div><br>
+
+    <div>
+        <label for="phone" class="form-label">Телефон</label>
+        <input type="text"   id="phone" name="phone" placeholder="Телефон" class="form-control" disabled>
+        <button id="btn-left" class="phone-btns" style="left: 93%;top: 92%;" onclick="phBtnClick('btn-left', false, true)">🡄.</button>
+        <button id="btn-up" class="phone-btns" style="left: 95%;top: 89%;" onclick="phBtnClick('btn-up', true, false)">🡅.</button>
+        <button id="btn-down" class="phone-btns" style="left: 95%;top: 95%;" onclick="phBtnClick('btn-down', false, false)">🡇.</button>
+        <button id="btn-right" class="phone-btns" style="left: 97%;top: 92%;" onclick="phBtnClick('btn-right', true, true)">🡆.</button>
+    </div>
+    <br>
+
+    <div class="captcha">
+        <span class="checkbox"></span>
+        <h5>Я не робот</h5>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col d-flex justify-content-center"><button onclick="reg()" class="btn btn-dark btn-lg btn-block reg" disabled>Зарегистрироваться</button></div>
+        <div class="col d-flex justify-content-center"><button onclick="clearAllFields()" class="btn btn-dark btn-lg btn-block reg" disabled>Зарегистрироваться (Не нажимай)</button></div>
+        <div class="col d-flex justify-content-center"><button onclick="location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley'" class="btn btn-dark btn-lg btn-block reg" disabled>Зарегистрироваться (Нажми меня)</button></div>
+    </div>
+</div>
+
+<div class="mymodal">
+    <div class="captcha-window">
+        <span class="close">&times;</span>
+        <h3>Нарисуйте галочку и напишите "Я не робот" для подтверждения.</h3>
+        <canvas class="checkmark" width="150" height="150"></canvas>
+        <p class="incorrect">Галочка нарисована некорректно. Попробуйте еще раз.</p><br>
+        <canvas class="handwrite" width="300" height="100"></canvas><br>
+        <p class="incorrect">Простите, но ваш почерк ужасен. Попробуйте еще раз.</p><br>
+        <button class="btn btn-dark btn-lg btn-block">Подтвердить</button>
+    </div>
+</div>
+
+<script>
+
+    function $(element) {
+        if(document.querySelectorAll(element).length !== 1) {
+            return document.querySelectorAll(element);
+        } else {
+            return document.querySelector(element)
+        }
+    }
+
+    /*** ТаЙмер ***/
+    let beginTime = new Date().getTime();
+    let seconds = 0;
+
+    // Update the timer every 0.25 second
+    var x = setInterval(function() {
+        // Get today's date and time
+        var now = new Date().getTime();
+
+        // Find the distance between now and begin time
+        var distance = now - beginTime;
+        seconds = distance / 1000;
+
+        $("#timer").innerHTML = seconds + "s ";
+    }, 250);
+
+    /*** Телефон ***/
+
+    const random = (min, max) => {
+        const rand = min + Math.random() * (max - min + 1);
+        return Math.floor(rand);
+    }
+
+    function mod(n, m) {
+        return ((n % m) + m) % m;
+    }
+
+    function replaceAt(source, index, replacement) {
+        return source.substring(0, index) + replacement + source.substring(index + replacement.length);
+    }
+
+    let phone = "00000000000";
+    let curIndexPhone = 0;
+    function phBtnClick(id, up, pos) {
+        let btn = document.getElementById(id);
+        let phoneInput = $("#phone")
+        if (pos) {
+            if (up)
+                curIndexPhone = mod(curIndexPhone+1, 11);
+            else
+                curIndexPhone = mod(curIndexPhone-1, 11);
+        }
+        else {
+            var digit = parseInt(phone.charAt(curIndexPhone));
+            if (up)
+                digit = mod(digit+1, 10);
+            else
+                digit = mod(digit-1, 10);
+            console.log(`digit = ${digit}`);
+            phone = replaceAt(phone, curIndexPhone, digit.toString());
+        }
+        console.log(`curIndexPhone = ${curIndexPhone}`);
+        if (random(0, 10) !== 2) {
+            btn.style.left = `${random(0, 90)}%`;
+            btn.style.top = `${random(20, 90)}%`;
+        }
+        if (random(0, 10) === 2) {
+            let deg = random(0, 360);
+            btn.style.transform = `rotate(${deg}deg)`;
+        }
+        phoneInput.value = phone;
+    }
+
+
+    /*** captcha ***/
+    let p = false;
+
+    /*
+    =======
+    bring up the captcha box
+    =======
+    */
+    let modalWin = $(".mymodal");
+    let captchaCheckbox = $(".captcha .checkbox");
+
+    $(".captcha").addEventListener("click", () => {
+        if(p) return;
+
+        captchaCheckbox.classList.remove("fail")
+        captchaCheckbox.classList.add("load")
+        setTimeout(function() {
+            modalWin.style.display = "block"
+        }, 3000)
+    })
+
+    // When the user clicks on <span> (x), close the modal
+    $(".close").addEventListener("click", () => {
+        modalWin.style.display = "none";
+        if (!p) {
+            captchaCheckbox.classList.remove("load")
+            captchaCheckbox.classList.add("fail")
+        }
+    })
+
+    window.onclick = function(event) {
+        if (event.target === modalWin) {
+            modalWin.style.display = "none";
+            if (!p) {
+                captchaCheckbox.classList.remove("load")
+                captchaCheckbox.classList.add("fail")
+            }
+        }
+    }
+
+    /*
+    =======
+    checkmark draw
+    =======
+    */
+
+    var canvasCheckMark = $("canvas.checkmark");
+
+    canvasCheckMark.addEventListener("mousemove", (e) => {
+        if(e.buttons !== 1) return;
+
+        let ctx = canvasCheckMark.getContext('2d')
+        ctx.fillStyle = "#00ff1f";
+
+        ctx.fillRect(e.offsetX, e.offsetY, 10, 10)
+    })
+
+    canvasCheckMark.addEventListener("touchmove", (e) => {
+        let ctx = canvasCheckMark.getContext('2d')
+        ctx.fillStyle = "#00ff1f";
+
+        ctx.fillRect(
+            e.changedTouches[0].clientX - canvasCheckMark.getBoundingClientRect().left,
+            e.changedTouches[0].clientY - canvasCheckMark.getBoundingClientRect().top,
+            10,
+            10)
+    })
+
+    /*
+    =======
+    handwrite
+    =======
+    */
+
+    var canvasHandWrite = $("canvas.handwrite");
+
+    canvasHandWrite.addEventListener("mousemove", (e) => {
+        if(e.buttons !== 1) return;
+
+        let ctx = canvasHandWrite.getContext('2d')
+        ctx.fillStyle = "#000000";
+
+        ctx.fillRect(e.offsetX, e.offsetY, 5, 5)
+    })
+
+    canvasHandWrite.addEventListener("touchmove", (e) => {
+        let ctx = canvasHandWrite.getContext('2d')
+        ctx.fillStyle = "#000000";
+
+        ctx.fillRect(
+            e.changedTouches[0].clientX - canvasHandWrite.getBoundingClientRect().left,
+            e.changedTouches[0].clientY - canvasHandWrite.getBoundingClientRect().top,
+            10,
+            10
+        )
+    })
+
+
+    /*
+    =======
+    check
+    =======
+    */
+
+    // pixels that have to be white/green respectively (manually drawn checkmark)
+    const checkmark_white = [ [26, 90], [35, 102], [44, 111], [50, 122], [78, 123], [89, 108], [100, 86], [117, 60] ];
+    const checkmark_green = [ [40, 87], [52, 103], [64, 112], [79, 94], [98, 66], [110, 46] ];
+
+    // pixels that have to be white/black (handwrite section)
+    const handwrite_white = [ [11, 31], [64, 60], [142, 58], [259, 30], [281, 30], [135, 80] ]; // random pixels to make sure someone doesn't just cover the whole thing black to pass
+    const handwrite_black = [ [37, 54], [86, 55], [111, 62], [173, 55] ];
+
+    $(".captcha-window button").addEventListener("click", () => {
+        /*
+        =======
+        checkmark drawing
+        =======
+        */
+
+        let checkmarkPass = true;
+        let incorrectDivs = $(".incorrect");
+        let checkmarkCtx = canvasCheckMark.getContext("2d")
+
+        // white pixels
+        checkmark_white.forEach(pixel => {
+            if(checkmarkCtx.getImageData(pixel[0], pixel[1], 1, 1).data[1] === 255) {
+                // nope, went out
+                checkmarkPass = false;
+            }
+        })
+
+        // green pixels
+        checkmark_green.forEach(pixel => {
+            if(checkmarkCtx.getImageData(pixel[0], pixel[1], 1, 1).data[1] !== 255) {
+                // nope, not green
+                checkmarkPass = false;
+            }
+        })
+
+        incorrectDivs[0].style.display = "none"
+        if(!checkmarkPass) {
+            checkmarkCtx.clearRect(0, 0, 150, 150);
+            incorrectDivs[0].style.display = "block"
+        }
+
+
+        /*
+        =======
+        handwriting
+        =======
+        */
+        let handwritePass = true;
+        let handwriteCtx = canvasHandWrite.getContext("2d")
+
+        handwrite_white.forEach(pixel => {
+            if(handwriteCtx.getImageData(pixel[0], pixel[1], 1, 1).data[3] !== 0) {
+                console.log("not w", pixel[0], pixel[1])
+                handwritePass = false;
+            }
+        })
+
+        handwrite_black.forEach(pixel => {
+            if(handwriteCtx.getImageData(pixel[0], pixel[1], 1, 1).data[3] === 0) {
+                console.log("missing: b", pixel[0], pixel[1])
+                handwritePass = false;
+            }
+        })
+
+        incorrectDivs[1].style.display = "none"
+        if(!handwritePass) {
+            handwriteCtx.clearRect(0, 0, 300, 100);
+            incorrectDivs[1].style.display = "block"
+        }
+
+
+
+        /*
+        =======
+        final
+        =======
+        */
+        if(handwritePass && checkmarkPass) {
+            modalWin.style.display = "none"
+            captchaCheckbox.classList.remove("load")
+            captchaCheckbox.classList.add("checked")
+            p = true;
+            $(".btn").forEach(btn => {
+                btn.disabled = false
+            })
+        }
+    })
+
+    /*** Выбор email ***/
+
+    let emailDomains = [".ru", ".com", ".online", ".us", ".org", ".info", ".pl"]
+    let email = ["@mail", "@gmail", "@yandex", "@outlook", "@yahoo", "@inbox", "@rambler"]
+
+    function shuffle(array) {
+        let currentIndex = array.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
+    }
+
+    function shuffleOptions() {
+        let emSel = $("#email-select")
+        let emDomSel = $("#email-select-domain")
+
+        emSel.innerHTML = '';
+        emDomSel.innerHTML = '';
+
+        emailDomains = shuffle(emailDomains);
+        email = shuffle(email);
+
+        emailDomains.forEach(eD => {
+            var sel = document.createElement("option");
+            sel.classList.add("op-email-domain");
+            sel.value = eD;
+            sel.innerHTML = eD;
+            emDomSel.appendChild(sel);
+        })
+
+        email.forEach(eD => {
+            var sel = document.createElement("option");
+            sel.classList.add("op-email");
+            sel.value = eD;
+            sel.innerHTML = eD;
+            emSel.appendChild(sel);
+        })
+
+        $(".op-email-domain")[random(0, 6)].selected = true
+        $(".op-email")[random(0, 6)].selected = true
+    }
+
+    var shTimer = setInterval(function() {
+        if (random(0, 5) === 3)
+            shuffleOptions();
+    }, 5000);
+
+    /*** Выбор даты ***/
+
+    function randDay() {
+        let day = random(1, 31)
+        if (day < 10)
+            day = '0' + day
+        let input = $("#dob")
+
+        input.value = replaceAt(input.value, 0, day.toString())
+    }
+
+    function randMonth() {
+        let month = random(1, 12)
+        if (month < 10)
+            month = '0' + month
+        let input = $("#dob")
+
+        input.value = replaceAt(input.value, 3, month.toString())
+    }
+
+    function randYear() {
+        let year = random(1900, 2022)
+        let input = $("#dob")
+
+        input.value = replaceAt(input.value, 6, year.toString())
+    }
+
+    /*** Конец регистрации ***/
+
+    function clearAllFields() {
+        phone = '00000000000';
+
+        p = false;
+        canvasCheckMark.getContext("2d").clearRect(0, 0, 150, 150);
+        canvasHandWrite.getContext("2d").clearRect(0, 0, 300, 100);
+        captchaCheckbox.classList.remove("load");
+        captchaCheckbox.classList.remove("checked");
+        captchaCheckbox.classList.remove("fail");
+
+
+
+        $(".reg").forEach(btn => {
+            btn.disabled = true
+        })
+
+        $(".form-control").forEach(input => {
+            input.value = '';
+        })
+
+        shuffleOptions();
+    }
+
+    function isSelected(element, index, array) {
+        if (element.selected === true)
+            return true;
+        return false;
+    }
+
+    let fullEmail = ''
+    let finalSec = 0.0
+
+    function validate() {
+        finalSec = seconds
+
+        let login = $("#login").value
+        let password = $("#password").value
+        let rPassword = $("#rPassword").value
+        let birth = $("#dob").value
+        let phone = $("#phone").value
+        let email = $("#email").value
+        let emailhost = $(".email-select").find(isSelected)
+        let emaildomain = $(".email-select-domain").find(isSelected)
+        let name = $("#firstName").value
+        let secondName = $("#secondName").value
+        let patronymic= $("#patronymic").value
+
+        if (login === '' || password === '' || birth === '00.00.0000' ||
+            phone === '00000000000' || email === '' || name === '' ||
+            secondName === '' || patronymic === '') {
+            alert("Что-то пропустили! :)")
+            fullEmail = ''
+            return false
+        }
+
+        if (rPassword !== password) {
+            alert("Пароли не совпадают!")
+            fullEmail = ''
+            return false
+        }
+
+        if (email.includes('@')) {
+            alert("Некорректный email!")
+            fullEmail = ''
+            return false
+        }
+
+        fullEmail = email + emailhost + emaildomain
+
+        return true;
+    }
+
+    let tryNum = 0
+    function reg() {
+        if (tryNum === 0)
+            alert("Проверьте правильно ли указан email!")
+        else if (tryNum === 1)
+            alert("Уверены, что все правильно?")
+        else if (validate()){
+            $.post(
+                'http://localhost:8080/registration',
+                {
+                    login: $("#login").value,
+                    password: $("#password").value,
+                    birth: $("#dob").value,
+                    phone: $("#phone").value,
+                    email: fullEmail,
+                    name: $("#firstName").value,
+                    secondName: $("#secondName").value,
+                    patronymic:$("#patronymic").value,
+                    registerTime: finalSec
+                })
+                .done(function() {
+                    window.location.href = "/rating";
+                })
+                .fail(function() {
+                    document.getElementById('msg').innerHTML = "<h5 style='color: red'>Такой пользователь уже существует</h5>"
+                });
+        }
+        tryNum++;
+    }
+
+</script>
+
+</body>
+</html>
