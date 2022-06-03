@@ -530,7 +530,7 @@
             alert("Уверены, что все правильно?")
         else if (validate()){
             $.post(
-                'http://localhost:8080/registration',
+                'https://pps-suai.herokuapp.com/registration',
                 {
                     login: $("#login").value,
                     password: $("#password").value,
