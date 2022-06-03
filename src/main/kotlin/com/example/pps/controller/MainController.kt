@@ -24,7 +24,7 @@ class MainController {
     fun getRegistration() = "registration"
 
     @PostMapping("/registration")
-    fun postUser(@RequestBody user: User): ResponseEntity<String> {
+    fun postUser(user: User): ResponseEntity<String> {
         if (userRep.existsByLogin(user.login)) {
             return ResponseEntity("Пользователь с таким логином уже существует!", HttpStatus.BAD_REQUEST)
         }
@@ -36,6 +36,8 @@ class MainController {
         if (userRep.existsByPhone(user.phone)) {
             return ResponseEntity("Пользователь с таким телефоном уже существует!", HttpStatus.BAD_REQUEST)
         }
+
+        print(user)
 
         userRep.save(
             User(

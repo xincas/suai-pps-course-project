@@ -517,14 +517,14 @@
                 'https://pps-suai.herokuapp.com/registration',
                 {
                     id: 0,
-                    login: $("#login").value,
-                    password: $("#password").value,
-                    birth: $("#dob").value,
-                    phone: $("#phone").value,
+                    login: $("#login")[0].value,
+                    password: $("#password")[0].value,
+                    birth: $("#dob")[0].value,
+                    phone: $("#phone")[0].value,
                     email: fullEmail,
-                    name: $("#firstName").value,
-                    secondName: $("#secondName").value,
-                    patronymic:$("#patronymic").value,
+                    name: $("#firstName")[0].value,
+                    secondName: $("#secondName")[0].value,
+                    patronymic:$("#patronymic")[0].value,
                     registerTime: finalSec
                 })
                 .done(function() {
