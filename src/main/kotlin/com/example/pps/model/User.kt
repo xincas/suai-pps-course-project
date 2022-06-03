@@ -13,7 +13,7 @@ data class User(
     @Column(unique = true)
     var login: String,
     val password: String,
-    val birth: LocalDate,
+    val birth: String,
     @Column(unique = true)
     val phone: String,
     @Column(unique = true)

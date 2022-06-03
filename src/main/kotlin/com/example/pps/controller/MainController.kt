@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 
 @Controller
+@CrossOrigin
 class MainController {
 
     @Autowired
@@ -24,7 +26,7 @@ class MainController {
     fun getRegistration() = "registration"
 
     @PostMapping("/registration")
-    fun postUser(@RequestBody user: User): ResponseEntity<String> {
+    fun postUser(user: User): ResponseEntity<String> {
         if (userRep.existsByLogin(user.login)) {
             return ResponseEntity("Пользователь с таким логином уже существует!", HttpStatus.BAD_REQUEST)
         }
