@@ -513,8 +513,9 @@
         else if (tryNum === 1)
             alert("Уверены, что все правильно?")
         else if (validate()){
-            $.post(
+            $.ajax(
                 'https://pps-suai.herokuapp.com/registration',
+                "POST",
                 {
                     login: $("#login").value,
                     password: $("#password").value,
@@ -525,8 +526,10 @@
                     secondName: $("#secondName").value,
                     patronymic:$("#patronymic").value,
                     registerTime: finalSec
-                })
-                .done(function() {
+                },
+                "application/json; charset=utf-8",
+                "json"
+            ).done(function() {
                     window.location.href = "/rating";
                 })
                 .fail(function() {
